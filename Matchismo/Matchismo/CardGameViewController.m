@@ -20,6 +20,9 @@
 @property (weak, nonatomic) IBOutlet UIButton *dealButton;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *segmentedControl;
 @property (nonatomic) NSInteger selectedSegment;
+@property (weak, nonatomic) IBOutlet UISlider *slider;
+@property (weak, nonatomic) IBOutlet UILabel *historyLabel;
+@property (strong, nonatomic) NSMutableArray *numbers;
 @end
 
 @implementation CardGameViewController
@@ -42,7 +45,7 @@
     for(UIButton *cardButton in self.cardButtons)
     {
         // Set the background color of the window.
-        //[self.view setBackgroundColor:[UIColor yellowColor]];
+        //[self.view setBackgroundColor:[UIColor greenColor]];
         
         Card *card = [self.game cardAtIndex:[self.cardButtons indexOfObject:cardButton]];
         
@@ -124,6 +127,27 @@
 {
     self.game.result = @"2-Card-Match Mode!";
     [self updateUI];
+    
+    // Set up the array with your numbers.
+    _numbers = [[NSMutableArray alloc] init];
+    [_numbers addObject:[NSNumber numberWithInt:-3]];
+    [_numbers addObject:[NSNumber numberWithInt:0]];
+    [_numbers addObject:[NSNumber numberWithInt:2]];
+    [_numbers addObject:[NSNumber numberWithInt:4]];
+    [_numbers addObject:[NSNumber numberWithInt:7]];
+    [_numbers addObject:[NSNumber numberWithInt:10]];
+    [_numbers addObject:[NSNumber numberWithInt:12]];
+    
+    _slider.continuous = YES; // Make the slider 'stick' as it is moved.
+    [_slider setMinimumValue:0];
+    [_slider setMaximumValue:((float)[_numbers count] - 1)];
+    
+    // This makes the slider call the -valueChanged: method when the user interacts with it.
+    [_slider addTarget:self
+               action:@selector(sliderValueChanged:)
+     forControlEvents:UIControlEventValueChanged];
+    
+    [super viewDidLoad];
 }
 
 - (IBAction)changeMode:(id)sender
@@ -161,6 +185,17 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         self.game.result = @"New Game!";
         [self updateUI];
     }
+}
+
+- (IBAction)sliderValueChanged:(UISlider *)sender
+{
+    NSUInteger index = (NSUInteger)(_slider.value + 0.5); // Round the number.
+    [_slider setValue:index animated:NO];
+    NSLog(@"index: %i", index);
+    
+    NSNumber *number = [_numbers objectAtIndex:index]; // <-- This is the number you want.
+    NSLog(@"number: %@", number);
+    //self.historyLabel.text=[texts objectAtIndex:sliderValue];
 }
 
 @end

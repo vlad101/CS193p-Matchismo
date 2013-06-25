@@ -10,9 +10,11 @@
 
 @interface CardGameViewController : UIViewController
 <UIAlertViewDelegate>
+{}
 
 - (IBAction)flipCard:(UIButton *)sender;
 - (IBAction)dealCards:(id)sender;
 - (IBAction)changeMode:(id)sender;
+- (IBAction)sliderValueChanged:(UISlider *)sender;
 
 @end
