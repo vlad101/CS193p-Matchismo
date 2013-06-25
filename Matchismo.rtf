@@ -1,0 +1,316 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf390
+{\fonttbl\f0\fnil\fcharset0 Menlo-Regular;\f1\fnil\fcharset0 Menlo-Bold;}
+{\colortbl;\red255\green255\blue255;\red92\green38\blue153;\red255\green39\blue18;\red63\green110\blue116;
+\red118\green15\blue80;\red46\green13\blue110;\red38\green71\blue75;\red35\green110\blue37;\red0\green0\blue255;
+\red137\green19\blue21;\red100\green56\blue32;}
+\margl1440\margr1440\vieww31720\viewh17360\viewkind0
+\deftab866
+\pard\tx866\pardeftab866\pardirnatural
+
+\f0\fs36 \cf2 \CocoaLigature0 NSArray\cf0  *cardButtons - an array of UIButtons.\
+\
+\pard\tx866\pardeftab866\pardirnatural
+\cf3 1. Set the game [Set deck and set 16 cards drawn from the deck]:\
+\cf0 \
+- (\cf4 CardMatchingGame\cf0  *)game\
+\{\
+    \cf5 if\cf0 (!\cf4 _game\cf0 )\
+        \cf4 _game\cf0  = [[\cf4 CardMatchingGame\cf0  \cf6 alloc\cf0 ] \cf7 initWithCardCount\cf0 :\cf5 self\cf0 .\cf4 cardButtons\cf0 .\cf6 count\cf0  \cf7 usingDeck\cf0 :[[\cf4 PlayingCardDeck\cf0  \cf6 alloc\cf0 ] \cf6 init\cf0 ]];\
+\cf8 	/*-----------------------------------------------------------------------------------------------------------------------\
+		There is no game at the first run. Create a PlayingCardDeck and create a CardMatchingGame.\
+		
+\f1\b \ul PlayingCardDeck.m:
+\f0\b0 \ulnone \
+\
+		\cf0 - (\cf5 id\cf0 )init\
+		\{\
+  			\cf5 self\cf0  = [\cf5 super\cf0  \cf6 init\cf0 ];\
+    \
+    		\cf5 if\cf0 (\cf5 self\cf0 )\
+    		\{\
+\cf8 				// Create all the 52 playing cards:\cf0 \
+        		\cf5 for\cf0 (\cf2 NSString\cf0  *suit \cf5 in\cf0  [\cf4 PlayingCard\cf0  \cf7 validSuits\cf0 ])\
+        		\{\
+\
+					\cf8 /* Get the valid suits from 
+\f1\b \ul PlayingCard.m
+\f0\b0 \ulnone :\cf0 \
+					+ (\cf2 NSArray\cf0  *)validSuits\
+					\{\
+    					\cf5 static\cf0  \cf2 NSArray\cf0  *validSuits = \cf5 nil\cf0 ;\
+   						\cf5 if\cf0 (!validSuits)\
+       	 					validSuits = \cf9 @[\cf10 @"\uc0\u9829 "\cf0 , \cf10 @"\uc0\u9830 "\cf0 , \cf10 @"\uc0\u9824 "\cf0 , \cf10 @"\uc0\u9827 "\cf9 ]\cf0 ;\
+    					\cf5 return\cf0  validSuits;\
+					\}\
+\cf8 					-----------------------------------------*/\
+\cf0 \
+            		\cf5 for\cf0 (\cf2 NSUInteger\cf0  rank = \cf9 1\cf0 ; rank <= [\cf4 PlayingCard\cf0  \cf7 maxRank\cf0 ]; rank++)\
+            		\{\
+							\cf8 /* Get the valid rank [not index 0 - "?"] from 
+\f1\b \ul PlayingCard.m
+\f0\b0 \ulnone :\cf0 \
+							+ (\cf2 NSArray\cf0  *)rankStrings\
+							\{\
+   								\cf5 static\cf0  \cf2 NSArray\cf0  *rankStrings = \cf5 nil\cf0 ;\
+    							\cf5 if\cf0 (!rankStrings)\
+        							rankStrings = \cf9 @[\cf10 @"?"\cf0 , \cf10 @"A"\cf0 , \cf10 @"2"\cf0 , \cf10 @"3"\cf0 , \cf10 @"4"\cf0 , \cf10 @"5"\cf0 , \cf10 @"6"\cf0 , \cf10 @"7"\cf0 , \cf10 @"8"\cf0 , \cf10 @"9"\cf0 , \cf10 @"10"\cf0 , \cf10 @"J"\cf0 , \cf10 @"Q"\cf0 , \cf10 @"K"\cf9 ]\cf0 ;\
+    									\cf5 return\cf0  rankStrings;\
+							\}\
+							\cf8 Get the index within bounds of allowed suits from 
+\f1\b \ul PlayingCard.m
+\f0\b0 \ulnone :\cf0 \
+							+ (\cf2 NSUInteger\cf0 )maxRank\
+							\{\
+    							\cf5 return\cf0  [\cf5 self\cf0  \cf7 rankStrings\cf0 ].\cf6 count\cf0  - \cf9 1\cf0 ;\
+							\}	\
+\cf8 							------------------------------------------------------------*/\
+\cf0 						\
+                		\cf4 PlayingCard\cf0  *card = [[\cf4 PlayingCard\cf0  \cf6 alloc\cf0 ] \cf6 init\cf0 ];\
+                		card.\cf4 rank\cf0  = rank;\
+\
+							\cf8 /* Set the rank:\cf0 \
+							- (\cf5 void\cf0 )setRank:(\cf2 NSUInteger\cf0 )rank\
+							\{\
+    							\cf5 if\cf0 (rank <= [\cf4 PlayingCard\cf0  \cf7 maxRank\cf0 ])\
+        						\cf4 _rank\cf0  = rank;\
+							\}\
+							\cf8 ---------------------------------------*/\
+\cf0 \
+                		card.\cf4 suit\cf0  = suit;\
+\
+							\cf8 /* Set the suit:\cf0 \
+							- (\cf5 void\cf0 )setSuit:(\cf2 NSString\cf0  *)suit\
+							\{\
+    							\cf5 if\cf0 ([[\cf4 PlayingCard\cf0  \cf7 validSuits\cf0 ] \cf6 containsObject\cf0 :suit])\
+        							\cf4 _suit\cf0  = suit;\
+							\}\
+\cf8 							---------------------------------------*/\cf0 \
+\
+               	    	[\cf5 self\cf0  \cf7 addCard\cf0 :card \cf7 atTop\cf0 :\cf5 YES\cf0 ];\
+\
+							\cf8 /* Add the card to the top:\cf0 \
+							- (\cf5 void\cf0 )addCard:(\cf4 Card\cf0  *)card atTop:(\cf5 BOOL\cf0 )atTop\
+							\{\
+    							\cf5 if\cf0 (atTop)\
+       								\cf8 // Add card to the top.\cf0 \
+        							[\cf5 self\cf0 .\cf4 cards\cf0  \cf6 insertObject\cf0 :card \cf6 atIndex\cf0 :\cf9 0\cf0 ];\
+  									\
+									\cf8 /* Set the card:\cf0 \
+										- (\cf2 NSMutableArray\cf0  *)cards\
+										\{\
+    										\cf5 if\cf0 (!\cf4 _cards\cf0 )\
+        										\cf4 _cards\cf0  = [[\cf2 NSMutableArray\cf0  \cf6 alloc\cf0 ] \cf6 init\cf0 ];\
+    										\cf5 return\cf0  \cf4 _cards\cf0 ;\
+										\}\
+\cf8 							      	-----------------------------------------------*/\cf0 \
+    							\cf5 else\cf0 \
+        							\cf8 // Add card at the end.\cf0 \
+        							[\cf5 self\cf0 .\cf4 cards\cf0  \cf6 addObject\cf0 :card];\
+							\}\
+\cf8 							---------------------------------------*/\cf0 \
+          	    	\}\
+       	    	\}\
+    		\}\
+    		\cf5 return\cf0  \cf5 self\cf0 ;\
+		\}\cf8 \
+	*/\
+\
+	/*-----------------------------------------------------------------------------------------------------------------------\
+	Create a CardMatchingGame. 
+\f1\b \ul CardMatchingGame.m\ulnone :\
+\ul \
+	
+\f0\b0 \cf0 \ulnone - (\cf5 id\cf0 )initWithCardCount:(\cf2 NSUInteger\cf0 )count usingDeck:(\cf4 Deck\cf0  *)deck\
+	\{\
+    	\cf5 self\cf0  = [\cf5 super\cf0  \cf6 init\cf0 ];\
+    \
+    	\cf5 if\cf0 (\cf5 self\cf0 )\
+    	\{\
+       		\cf8 // Loop through the specified count of 16 cards.\cf0 \
+        	\cf5 for\cf0 (\cf5 int\cf0  i = \cf9 0\cf0 ; i < count; i++)\
+        	\{\
+           		\cf8 // Draw a random card from the specified deck.\cf0 \
+            	\cf4 Card\cf0  *card = [deck \cf7 drawRandomCard\cf0 ];\
+\
+\cf8 					/* Draw a random card. 
+\f1\b \ul Card.m\ulnone :
+\f0\b0 \cf0 \
+            		- (\cf4 Card\cf0  *)drawRandomCard\
+					\{\
+    					\cf4 Card\cf0  *randomCard = \cf5 nil\cf0 ;\
+    \
+    					\cf8 // If deck has cards.\cf0 \
+    					\cf5 if\cf0 (\cf5 self\cf0 .\cf4 cards\cf0 .\cf6 count\cf0 )\
+\
+\cf8 							/* Check cards:\cf0 \
+							- (\cf2 NSMutableArray\cf0  *)cards\
+							\{\
+    							\cf5 if\cf0 (!\cf4 _cards\cf0 )\
+        							\cf4 _cards\cf0  = [[\cf2 NSMutableArray\cf0  \cf6 alloc\cf0 ] \cf6 init\cf0 ];\
+    							\cf5 return\cf0  \cf4 _cards\cf0 ;\
+							\}\
+\cf8 							---------------------------------------*/\cf0 \
+    					\{\
+        					\cf5 unsigned\cf0  index = \cf6 arc4random\cf0 () % \cf5 self\cf0 .\cf4 cards\cf0 .\cf6 count\cf0 ;\
+        					randomCard = \cf5 self\cf0 .\cf4 cards\cf0 [index];\
+        					[\cf5 self\cf0 .\cf4 cards\cf0  \cf6 removeObjectAtIndex\cf0 :index];\
+    					\}\
+    \
+    						\cf5 return\cf0  randomCard;\
+						\}\
+\cf8 					------------------------------*/\
+\cf0 \
+           		\cf8 // Protect from insufficient decks.\cf0 \
+            	\cf5 if\cf0 (!card)\
+                	\cf5 self\cf0  = \cf5 nil\cf0 ;\
+            	\cf5 else\cf0 \
+               		\cf8 // Add a card to an NSMutableArray.\cf0 \
+                	\cf5 self\cf0 .\cf4 cards\cf0 [i] = card;\
+        	\}\
+    	\}\
+    \
+    	\cf5 return\cf0  \cf5 self\cf0 ;\
+	\}
+\f1\b \cf8 \ul \ulc8 \
+	
+\f0\b0 \ulnone ----------------------------------------------------------------------------------------------------------------------
+\f1\b */\ul \
+
+\f0\b0 \cf0 \ulnone \
+    \cf5 return\cf0  \cf4 _game\cf0 ;\
+\}\
+\
+\cf3 2. Set the initial 16 buttons on the screen:\
+\cf0 \
+- (\cf5 void\cf0 )setCardButtons:(\cf2 NSArray\cf0  *)cardButtons\
+\{\
+    \cf4 _cardButtons\cf0  = cardButtons;\
+    [\cf5 self\cf0  \cf7 updateUI\cf0 ];\
+	\
+		\cf8 /* Update the view of buttons:\
+		\cf0 - (\cf5 void\cf0 )updateUI\
+		\{\
+    		\cf5 for\cf0 (\cf2 UIButton\cf0  *cardButton \cf5 in\cf0  \cf5 self\cf0 .\cf4 cardButtons\cf0 )\
+    		\{\
+        		\cf4 Card\cf0  *card = [\cf5 self\cf0 .\cf4 game\cf0  \cf7 cardAtIndex\cf0 :[\cf5 self\cf0 .\cf4 cardButtons\cf0  \cf6 indexOfObject\cf0 :cardButton]];\
+\
+					\cf8 /* Get the card index of the game [starts at 0]:\cf0 \
+					- (\cf4 Card\cf0  *)cardAtIndex:(\cf2 NSUInteger\cf0 )index\
+					\{\
+    					\cf5 return\cf0  (index < \cf5 self\cf0 .\cf4 cards\cf0 .\cf6 count\cf0 ) ? \cf5 self\cf0 .\cf4 cards\cf0 [index] : \cf5 nil\cf0 ;\
+					\}\
+\
+					\cf8 // Get the card contents (suit and rank):\
+\cf0 					- (\cf2 NSString\cf0  *)contents\
+					\{\
+    					\cf8 // A playing card with a rank of zero will show up as "?".\cf0 \
+    					\cf5 return\cf0  [[\cf4 PlayingCard\cf0  \cf7 rankStrings\cf0 ][\cf5 self\cf0 .\cf4 rank\cf0 ] \cf6 stringByAppendingString\cf0 :\cf5 self\cf0 .\cf4 suit\cf0 ];\
+					\}\cf8 \
+					--------------------------------------------*/\cf0 \
+\
+        		\cf8 // Set the card in the selected state to be the card's contents.\cf0 \
+        		\cf8 // If the contents have not changed, it will do nothing.\cf0 \
+    	    	[cardButton \cf6 setTitle\cf0 :card.\cf4 contents\cf0  \cf6 forState\cf0 :\cf6 UIControlStateSelected\cf0 ];\
+        \
+        		\cf8 // Set the title when the button is both Selected and Disabled to also be the card's contents.\cf0 \
+        		[cardButton \cf6 setTitle\cf0 :card.\cf4 contents\cf0  \cf6 forState\cf0 :\cf6 UIControlStateSelected\cf0 |\cf6 UIControlStateDisabled\cf0 ];\
+        \
+        		\cf8 // Select the card only if it's faceUp.\cf0 \
+        		cardButton.\cf2 selected\cf0  = card.\cf4 faceUp\cf0 ;\
+        \
+        		\cf8 // Make the card untappable if isUnplayable.\cf0 \
+        		cardButton.\cf2 enabled\cf0  = !card.\cf7 isUnplayable\cf0 ;\
+        \
+        		\cf8 // Make the disabled buttons "semi-transparent."\cf0 \
+       	 		cardButton.\cf2 alpha\cf0  = card.\cf7 isUnplayable\cf0  ? \cf9 0.3\cf0  : \cf9 1.0\cf0 ;\
+        \
+        		\cf8 // Update the score.\cf0 \
+        		\cf5 self\cf0 .\cf4 scoreLabel\cf0 .\cf2 text\cf0  = [\cf2 NSString\cf0  \cf6 stringWithFormat\cf0 :\cf10 @"Score: %d"\cf0 , \cf5 self\cf0 .\cf4 game\cf0 .\cf4 score\cf0 ];\
+    		\}\
+		\}\
+		\cf8 ---------------------------------------------------------*/\cf0 \
+\}\
+\
+\cf3 3. Select the card:\
+\
+\cf0 - (\cf5 void\cf0 )flipCardAtIndex:(\cf2 NSUInteger\cf0 )index\
+\{\
+    \cf8 // Get the card.\cf0 \
+    \cf4 Card\cf0  *card = [\cf5 self\cf0  \cf7 cardAtIndex\cf0 :index];\
+    \
+    \cf8 // Flip the card if it is playable.\cf0 \
+    \cf5 if\cf0 (!card.\cf7 isUnplayable\cf0 )\
+    \{\
+        \cf5 if\cf0 (!card.\cf7 isFaceUp\cf0 )\
+        \{\
+            \cf8 // Is flipping the card creates a match?\cf0 \
+            \cf5 for\cf0 (\cf4 Card\cf0  *otherCard \cf5 in\cf0  \cf5 self\cf0 .\cf4 cards\cf0 )\
+            \{\
+                \cf8 // Look through the other cards looking for another face up, playable one.\cf0 \
+                \cf5 if\cf0 (otherCard.\cf7 isFaceUp\cf0  && !otherCard.\cf7 isUnplayable\cf0 )\
+                \{\
+                    \cf8 // If the card is found check to see if it there is a match.\cf0 \
+                    \cf8 // Since it's a 2-card matching game, create an array with one card.\cf0 \
+                    \cf5 int\cf0  matchScore = [card \cf7 match\cf0 :\cf9 @[\cf0 otherCard\cf9 ]\cf0 ];\
+                    \
+                    \cf8 // If it's a match and both cards become unplayable, up the score.\cf0 \
+                    \cf5 if\cf0 (matchScore)\
+                    \{\
+                        otherCard.\cf4 unplayable\cf0  = \cf5 YES\cf0 ;\
+                        card.\cf4 unplayable\cf0  = \cf5 YES\cf0 ;\
+                        \cf5 self\cf0 .\cf4 score\cf0  += matchScore * \cf11 MATCH_BONUS\cf0 ;\
+                    \}\
+                    \cf5 else\cf0 \
+                    \{\
+                        otherCard.\cf4 faceUp\cf0  = \cf5 NO\cf0 ;\
+                        \cf5 self\cf0 .\cf4 score\cf0  -= \cf11 MISMATCH_PENALTY\cf0 ;\
+                    \}\
+                    \cf5 break\cf0 ;\
+                \}\
+            \}\
+            \cf5 self\cf0 .\cf4 score\cf0  -= \cf11 FLIP_COST\cf0 ;\
+        \}\
+        \
+        card.\cf4 faceUp\cf0  = !card.\cf4 faceUp\cf0 ;\
+    \}\
+\}\
+\
+\cf8 // flipCount gets incremented\cf0 \
+\
+- (\cf5 IBAction\cf0 )flipCard:(\cf2 UIButton\cf0  *)sender\
+\{\
+    \cf8 // Let the CardMatchingGame to flip the card.\cf0 \
+    [\cf5 self\cf0 .\cf4 game\cf0  \cf7 flipCardAtIndex\cf0 :[\cf5 self\cf0 .\cf4 cardButtons\cf0  \cf6 indexOfObject\cf0 :sender]];\
+    \cf5 self\cf0 .\cf4 flipCount\cf0 ++;\
+    [\cf5 self\cf0  \cf7 updateUI\cf0 ];\
+\}\
+\
+\cf8 // flipCount gets the text\cf0 \
+\
+- (\cf5 void\cf0 )setFlipCount:(\cf5 int\cf0 )flipCount\
+\{\
+    \cf8 // Only setters and getters should access the instance variable directly.\cf0 \
+    \cf4 _flipCount\cf0  = flipCount;\
+    \cf5 self\cf0 .\cf4 flipsLabel\cf0 .\cf2 text\cf0  = [\cf2 NSString\cf0  \cf6 stringWithFormat\cf0 :\cf10 @"Flips: %d"\cf0 , \cf5 self\cf0 .\cf4 flipCount\cf0 ];\
+    \cf6 NSLog\cf0 (\cf10 @"flips updated to %d"\cf0 , flipCount);\
+\}\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+}
