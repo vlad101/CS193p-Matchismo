@@ -10,7 +10,9 @@
 
 @interface CardGameViewController : UIViewController
 <UIAlertViewDelegate>
-{}
+{
+    NSMutableArray *historyFlip;
+}
 
 - (IBAction)flipCard:(UIButton *)sender;
 - (IBAction)dealCards:(id)sender;

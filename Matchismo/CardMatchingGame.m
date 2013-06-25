@@ -13,7 +13,6 @@
 @property (nonatomic) int score;
 @end
 
-
 @implementation CardMatchingGame
 
 - (NSMutableArray *)cards

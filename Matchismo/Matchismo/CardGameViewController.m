@@ -21,8 +21,7 @@
 @property (weak, nonatomic) IBOutlet UISegmentedControl *segmentedControl;
 @property (nonatomic) NSInteger selectedSegment;
 @property (weak, nonatomic) IBOutlet UISlider *slider;
-@property (weak, nonatomic) IBOutlet UILabel *historyLabel;
-@property (strong, nonatomic) NSMutableArray *numbers;
+
 @end
 
 @implementation CardGameViewController
@@ -42,10 +41,26 @@
 
 - (void)updateUI
 {
+    // If the value of the slider is not maximum, make it transparent.
+    self.resultLabel.alpha = ([_slider value] == [_slider maximumValue]) ? 1.0 : 0.5;
+    
+    [_slider setValue:[_slider maximumValue] animated:NO];
+        
+    // add the result to the history array.
+    if(self.game.result)
+        [historyFlip addObject:[NSString stringWithFormat:@"%@", self.game.result]];
+    
+    // Check the array historyFlip contents and count.
+    NSLog(@"A history array %@ count: %d", historyFlip, historyFlip.count);
+    
     for(UIButton *cardButton in self.cardButtons)
     {
         // Set the background color of the window.
         //[self.view setBackgroundColor:[UIColor greenColor]];
+        
+        self.resultLabel.alpha = ([_slider value] == [_slider maximumValue]) ? 1.0 : 0.5;
+        
+        [_slider setValue:[_slider maximumValue] animated:NO];
         
         Card *card = [self.game cardAtIndex:[self.cardButtons indexOfObject:cardButton]];
         
@@ -83,10 +98,12 @@
         // Make the disabled buttons "semi-transparent."
         cardButton.alpha = card.isUnplayable ? 0.3 : 1.0;
         
-        // Update the result label.
         if(self.game.result)
-            self.resultLabel.text = [NSString stringWithFormat:@"%@", self.game.result];
-        
+        {
+            if(historyFlip)
+                self.resultLabel.text = [NSString stringWithFormat:@"%@", [historyFlip lastObject]];
+        }
+            
         // Update the score label.
         self.scoreLabel.text = [NSString stringWithFormat:@"Score: %d", self.game.score];
         
@@ -125,27 +142,24 @@
 
 - (void)viewDidLoad
 {
-    self.game.result = @"2-Card-Match Mode!";
+    // An array holds the history of the game.
+    historyFlip = [[NSMutableArray alloc] init];
+    
+    self.resultLabel.text = [NSString stringWithFormat:@"2-Card-Mode Game"];
+    
+    // add the result to the history array.
+    [historyFlip addObject:[NSString stringWithFormat:@"2-Card-Mode Game"]];
+    
     [self updateUI];
-    
-    // Set up the array with your numbers.
-    _numbers = [[NSMutableArray alloc] init];
-    [_numbers addObject:[NSNumber numberWithInt:-3]];
-    [_numbers addObject:[NSNumber numberWithInt:0]];
-    [_numbers addObject:[NSNumber numberWithInt:2]];
-    [_numbers addObject:[NSNumber numberWithInt:4]];
-    [_numbers addObject:[NSNumber numberWithInt:7]];
-    [_numbers addObject:[NSNumber numberWithInt:10]];
-    [_numbers addObject:[NSNumber numberWithInt:12]];
-    
-    _slider.continuous = YES; // Make the slider 'stick' as it is moved.
-    [_slider setMinimumValue:0];
-    [_slider setMaximumValue:((float)[_numbers count] - 1)];
     
     // This makes the slider call the -valueChanged: method when the user interacts with it.
     [_slider addTarget:self
-               action:@selector(sliderValueChanged:)
-     forControlEvents:UIControlEventValueChanged];
+                action:@selector(sliderValueChanged:)
+      forControlEvents:UIControlEventValueChanged];
+    
+    self.resultLabel.alpha = ([_slider value] == [_slider maximumValue]) ? 1.0 : 0.5;
+    
+    [_slider setValue:[_slider maximumValue] animated:NO];
     
     [super viewDidLoad];
 }
@@ -189,13 +203,21 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 
 - (IBAction)sliderValueChanged:(UISlider *)sender
 {
+    // Update the slider information.
+    _slider.continuous = YES;
+    [_slider setMinimumValue:0];
+    [_slider setMaximumValue:((float)[historyFlip count] - 1)];
+    
     NSUInteger index = (NSUInteger)(_slider.value + 0.5); // Round the number.
+    
     [_slider setValue:index animated:NO];
     NSLog(@"index: %i", index);
     
-    NSNumber *number = [_numbers objectAtIndex:index]; // <-- This is the number you want.
-    NSLog(@"number: %@", number);
-    //self.historyLabel.text=[texts objectAtIndex:sliderValue];
+    NSString *flip = [historyFlip objectAtIndex:index];
+    
+    self.resultLabel.text = [NSString stringWithFormat:@"%@", flip];
+    
+    self.resultLabel.alpha = ([_slider value] == [_slider maximumValue]) ? 1.0 : 0.5;
 }
 
 @end
