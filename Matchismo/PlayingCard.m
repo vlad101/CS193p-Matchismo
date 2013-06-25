@@ -15,7 +15,7 @@
 @synthesize suit = _suit;
 
 // PlayingCards should match if the suit and/or rank is the same
-- (int)match:(NSArray *)otherCards
+- (int)match:(NSArray *)otherCards selectedMode:(int)mode
 {
     int score = 0;
     
@@ -32,14 +32,15 @@
             if(otherCard.rank == self.rank)
                 score = 4;
     }
-    else if(otherCards.count == 2)
+    else if(otherCards.count == 2 && mode == 1)
     {
-        PlayingCard *firstCard = [otherCards objectAtIndex:0];
-        PlayingCard *secondCard = [otherCards objectAtIndex:1];
+        PlayingCard *card1 = [otherCards objectAtIndex:0];
+        PlayingCard *card2 = [otherCards objectAtIndex:1];
         
-        if ([firstCard.suit isEqualToString:self.suit] && [secondCard.suit isEqualToString:self.suit])
+        if ([card1.suit isEqualToString:self.suit] &&
+            [card2.suit isEqualToString:self.suit])
             score = 4;
-        else if ((firstCard.rank == self.rank) && (secondCard.rank == self.rank))
+        else if ((card1.rank == self.rank) && (card2.rank == self.rank))
             score = 16;
     }
     

@@ -62,9 +62,12 @@
 #define MISMATCH_PENALTY 2;
 
 - (void)flipCardAtIndex:(NSUInteger)index
+           selectedMode:(int)mode;
 {
     // Get the card.
     Card *card = [self cardAtIndex:index];
+    
+    NSMutableArray *testCards = [[NSMutableArray alloc] init];
     
     // Flip the card if it is playable.
     if(!card.isUnplayable)
@@ -75,11 +78,11 @@
             for(Card *otherCard in self.cards)
             {
                 // Look through the other cards looking for another face up, playable one.
-                if(otherCard.isFaceUp && !otherCard.isUnplayable)
+                if(mode == 0 && otherCard.isFaceUp && !otherCard.isUnplayable)
                 {
                     // If the card is found check to see if it there is a match.
                     // Since it's a 2-card matching game, create an array with one card.
-                    int matchScore = [card match:@[otherCard]];
+                    int matchScore = [card match:@[otherCard] selectedMode:mode];
                     
                     // If it's a match and both cards become unplayable, up the score.
                     if(matchScore)
@@ -87,16 +90,51 @@
                         otherCard.unplayable = YES;
                         card.unplayable = YES;
                         self.score += matchScore * MATCH_BONUS;
-                        self.result = [NSString stringWithFormat:@"Matched %@ & %@! + 4 pts!", card.contents, otherCard.contents];
+                        self.result = [NSString stringWithFormat:@"Match! %@ %@ [%d pts]!", card.contents, otherCard.contents, matchScore * MATCH_BONUS];
                     }
                     else
                     {
                         otherCard.faceUp = NO;
                         self.score -= MISMATCH_PENALTY;
-                        self.result = [NSString stringWithFormat:@"No match %@ & %@! - 2 pts!", card.contents, otherCard.contents];
+                        self.result = [NSString stringWithFormat:@"No Match! %@ %@ [-2 pts]", card.contents, otherCard.contents];
                     }
                     break;
                 }
+                
+                // Look through the other cards looking for another face up, playable one.
+                if(mode == 1 && otherCard.isFaceUp && !otherCard.isUnplayable)
+                {
+                    [testCards addObject:otherCard];
+                }
+                
+                if(mode == 1 && testCards.count == 2 && otherCard.isFaceUp && !otherCard.isUnplayable)
+                {
+                    Card *card1 = testCards[0];
+                    Card *card2 = testCards[1];
+                    
+                    // If the card is found check to see if it there is a match.
+                    // Since it's a 2-card matching game, create an array with one card.
+                    int matchScore = [card match:testCards selectedMode:mode];
+                    
+                    // If it's a match and both cards become unplayable, up the score.
+                    if(matchScore)
+                    {
+                        for(Card *testCard in testCards)
+                            testCard.unplayable = YES;
+                        card.unplayable = YES;
+                        self.score += matchScore * MATCH_BONUS;
+                        self.result = [NSString stringWithFormat:@"Match! %@ %@ %@ [%d pts!]", card.contents, card1.contents, card2.contents, matchScore * MATCH_BONUS];
+                    }
+                    else
+                    {
+                        for(Card *testCard in testCards)
+                            testCard.faceUp = NO;
+                        self.score -= MISMATCH_PENALTY;
+                        self.result = [NSString stringWithFormat:@"No match! %@ %@ %@ [-2 pts!]", card.contents, card1.contents, card2.contents];
+                    }
+                    break;
+                }
+                
                 self.result = [NSString stringWithFormat:@"Flipped up %@!", card.contents];
             }
             

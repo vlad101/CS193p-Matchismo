@@ -17,6 +17,7 @@
 @property (strong, nonatomic) CardMatchingGame *game;
 @property (weak, nonatomic) IBOutlet UILabel *scoreLabel;
 @property (weak, nonatomic) IBOutlet UILabel *resultLabel;
+@property (weak, nonatomic) IBOutlet UIButton *dealButton;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *segmentedControl;
 @property (nonatomic) NSInteger selectedSegment;
 @end
@@ -40,7 +41,28 @@
 {
     for(UIButton *cardButton in self.cardButtons)
     {
+        // Set the background color of the window.
+        //[self.view setBackgroundColor:[UIColor yellowColor]];
+        
         Card *card = [self.game cardAtIndex:[self.cardButtons indexOfObject:cardButton]];
+        
+        // Add a border to the cardButton.
+        CALayer * layerCardButton = [cardButton layer];
+        [layerCardButton setMasksToBounds:YES];
+        [layerCardButton setCornerRadius:5.0]; //when radius is 0, the border is a rectangle
+        [layerCardButton setBorderWidth:1.0];
+        [layerCardButton setBorderColor:[[UIColor blueColor] CGColor]];
+        
+        // Add a border to the dealButton.
+        CALayer * layerDealButton = [_dealButton layer];
+        [layerDealButton setMasksToBounds:YES];
+        [layerDealButton setCornerRadius:3.0]; //when radius is 0, the border is a rectangle
+        [layerDealButton setBorderWidth:1.0];
+        [layerDealButton setBorderColor:[[UIColor blackColor] CGColor]];
+        
+        // Set the back card image.
+        UIImage *backImage = [UIImage imageNamed:@"card_back.jpg"];
+        [cardButton setBackgroundImage:backImage forState:UIControlStateNormal];
         
         // Set the card in the selected state to be the card's contents.
         // If the contents have not changed, it will do nothing.
@@ -64,6 +86,10 @@
         
         // Update the score label.
         self.scoreLabel.text = [NSString stringWithFormat:@"Score: %d", self.game.score];
+        
+        // Remove the card image when the button is selected.
+        if(cardButton.isSelected)
+            [cardButton setBackgroundImage:nil forState:UIControlStateNormal];
     }
 }
 
@@ -78,7 +104,7 @@
 - (IBAction)flipCard:(UIButton *)sender
 {
     // Let the CardMatchingGame to flip the card.
-    [self.game flipCardAtIndex:[self.cardButtons indexOfObject:sender]];
+    [self.game flipCardAtIndex:[self.cardButtons indexOfObject:sender] selectedMode:_selectedSegment];
     self.flipCount++;
     [self updateUI];
 }
@@ -91,10 +117,14 @@
                                                     delegate:self
                                            cancelButtonTitle:@"Cancel"
                                            otherButtonTitles:@"reset", nil];
-    
     [alert show];
 }
 
+- (void)viewDidLoad
+{
+    self.game.result = @"2-Card-Match Mode!";
+    [self updateUI];
+}
 
 - (IBAction)changeMode:(id)sender
 {
@@ -103,14 +133,14 @@
     
     if (_selectedSegment == 0)
     {
-        _game = [[CardMatchingGame alloc] initWithCardCount:self.cardButtons.count usingDeck:[[PlayingCardDeck alloc] init]];
+        _game = nil;
         self.flipCount = 0;
         self.game.result = @"2-Card-Match Mode!";
         [self updateUI];
     }
     else
     {
-        _game = [[CardMatchingGame alloc] initWithCardCount:self.cardButtons.count usingDeck:[[PlayingCardDeck alloc] init]];
+        _game = nil;
         self.flipCount = 0;
         self.game.result = @"3-Card-Match Mode!";
         [self updateUI];
@@ -126,17 +156,10 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     // Reset the game by creating a new game instance, set flipCount and score to zero.
     else if (buttonIndex == 1)
     {
-        if(_selectedSegment == 0)
-        {
-            _game = [[CardMatchingGame alloc] initWithCardCount:self.cardButtons.count usingDeck:[[PlayingCardDeck alloc] init]];
-            self.flipCount = 0;
-            self.game.result = @"New Game!";
-            [self updateUI];
-            NSLog(@"No Hello");
-        }
-        if(self.selectedSegment == 1)
-            NSLog(@"Hello");
-        start setting the different LogicalAddress
+        _game = nil;
+        self.flipCount = 0;
+        self.game.result = @"New Game!";
+        [self updateUI];
     }
 }
 

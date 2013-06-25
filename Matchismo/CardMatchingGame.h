@@ -15,7 +15,8 @@
 - (id)initWithCardCount:(NSUInteger)cardCount usingDeck:(Deck *)deck;
 
 // Flip a card.
-- (void)flipCardAtIndex:(NSUInteger)index;
+- (void)flipCardAtIndex:(NSUInteger)index
+           selectedMode:(int)mode;
 
 // Get a card.
 - (Card *)cardAtIndex:(NSUInteger)index;

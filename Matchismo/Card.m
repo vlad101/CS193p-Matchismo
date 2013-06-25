@@ -12,7 +12,7 @@
 
 @synthesize contents, faceUp, unplayable;
 
-- (int)match:(NSArray *)otherCards
+- (int)match:(NSArray *)otherCards selectedMode:(int)mode
 {
     int score = 0;
 
@@ -23,7 +23,7 @@
             score = 1;
     }
     
-    // if zero - no match, one - match.
+    // If zero - no match, one - match.
     return score;
 }
 
