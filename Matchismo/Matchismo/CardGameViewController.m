@@ -41,14 +41,14 @@
 
 - (void)updateUI
 {
-    // If the value of the slider is not maximum, make it transparent.
-    self.resultLabel.alpha = ([_slider value] == [_slider maximumValue]) ? 1.0 : 0.5;
+    // If the value of the slider is not minimum, make it transparent.
+    self.resultLabel.alpha = ([_slider value] == [_slider minimumValue]) ? 1.0 : 0.5;
     
-    [_slider setValue:[_slider maximumValue] animated:NO];
+    [_slider setValue:[_slider minimumValue] animated:NO];
         
     // add the result to the history array.
     if(self.game.result)
-        [historyFlip addObject:[NSString stringWithFormat:@"%@", self.game.result]];
+        [historyFlip insertObject:[NSString stringWithFormat:@"%@", self.game.result] atIndex:0];
     
     // Check the array historyFlip contents and count.
     NSLog(@"A history array %@ count: %d", historyFlip, historyFlip.count);
@@ -58,9 +58,7 @@
         // Set the background color of the window.
         //[self.view setBackgroundColor:[UIColor greenColor]];
         
-        self.resultLabel.alpha = ([_slider value] == [_slider maximumValue]) ? 1.0 : 0.5;
-        
-        [_slider setValue:[_slider maximumValue] animated:NO];
+        self.resultLabel.alpha = ([_slider value] == [_slider minimumValue]) ? 1.0 : 0.5;
         
         Card *card = [self.game cardAtIndex:[self.cardButtons indexOfObject:cardButton]];
         
@@ -101,7 +99,7 @@
         if(self.game.result)
         {
             if(historyFlip)
-                self.resultLabel.text = [NSString stringWithFormat:@"%@", [historyFlip lastObject]];
+                self.resultLabel.text = [NSString stringWithFormat:@"%@", [historyFlip firstObject]];
         }
             
         // Update the score label.
@@ -148,7 +146,7 @@
     self.resultLabel.text = [NSString stringWithFormat:@"2-Card-Mode Game"];
     
     // add the result to the history array.
-    [historyFlip addObject:[NSString stringWithFormat:@"2-Card-Mode Game"]];
+    [historyFlip insertObject:[NSString stringWithFormat:@"2-Card-Mode Game"] atIndex:0];
     
     [self updateUI];
     
@@ -157,9 +155,9 @@
                 action:@selector(sliderValueChanged:)
       forControlEvents:UIControlEventValueChanged];
     
-    self.resultLabel.alpha = ([_slider value] == [_slider maximumValue]) ? 1.0 : 0.5;
+    self.resultLabel.alpha = ([_slider value] == [_slider minimumValue]) ? 1.0 : 0.5;
     
-    [_slider setValue:[_slider maximumValue] animated:NO];
+    //[_slider setValue:[_slider minimumValue] animated:NO];
     
     [super viewDidLoad];
 }
@@ -208,16 +206,17 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     [_slider setMinimumValue:0];
     [_slider setMaximumValue:((float)[historyFlip count] - 1)];
     
-    NSUInteger index = (NSUInteger)(_slider.value + 0.5); // Round the number.
+    // Round the number.
+    NSUInteger index = (NSUInteger)(_slider.value + 0.5);
     
-    [_slider setValue:index animated:NO];
+    //[_slider setValue:index animated:NO];
     NSLog(@"index: %i", index);
     
     NSString *flip = [historyFlip objectAtIndex:index];
     
     self.resultLabel.text = [NSString stringWithFormat:@"%@", flip];
     
-    self.resultLabel.alpha = ([_slider value] == [_slider maximumValue]) ? 1.0 : 0.5;
+    self.resultLabel.alpha = ([_slider value] == [_slider minimumValue]) ? 1.0 : 0.5;
 }
 
 @end
