@@ -22,26 +22,38 @@
     // Match a single other card.
     if(otherCards.count == 1)
     {
-        // Get the card in the array.
-        PlayingCard *otherCard = [otherCards lastObject];
+        id otherCard = [otherCards lastObject];
         
-        // Give 4 times as many points for matching the rank than matching the suit.
-        if([otherCard.suit isEqualToString:self.suit])
-            score = 1;
-        else
-            if(otherCard.rank == self.rank)
-                score = 4;
+        if([otherCard isKindOfClass:[PlayingCard class]])
+        {
+            // Get the card in the array.
+            PlayingCard *otherPlayingCard = (PlayingCard *) otherCard;
+        
+            // Give 4 times as many points for matching the rank than matching the suit.
+            if([otherPlayingCard.suit isEqualToString:self.suit])
+                score = 1;
+            else
+                if(otherPlayingCard.rank == self.rank)
+                    score = 4;
+        }
     }
     else if(otherCards.count == 2 && mode == 1)
     {
-        PlayingCard *card1 = [otherCards objectAtIndex:0];
-        PlayingCard *card2 = [otherCards objectAtIndex:1];
+        id card1 = [otherCards objectAtIndex:0];
+        id card2 = [otherCards objectAtIndex:1];
         
-        if ([card1.suit isEqualToString:self.suit] &&
-            [card2.suit isEqualToString:self.suit])
-            score = 4;
-        else if ((card1.rank == self.rank) && (card2.rank == self.rank))
-            score = 16;
+        if([card1 isKindOfClass:[PlayingCard class]] &&
+            [card2 isKindOfClass:[PlayingCard class]])
+        {
+            PlayingCard *otherPlayingCard1 = (PlayingCard *) card1;
+            PlayingCard *otherPlayingCard2 = (PlayingCard *) card2;
+        
+            if ([otherPlayingCard1.suit isEqualToString:self.suit] &&
+                [otherPlayingCard2.suit isEqualToString:self.suit])
+                score = 4;
+            else if ((otherPlayingCard1.rank == self.rank) && (otherPlayingCard2.rank == self.rank))
+                score = 16;
+        }
     }
     
     // if zero - no match, one - match.
