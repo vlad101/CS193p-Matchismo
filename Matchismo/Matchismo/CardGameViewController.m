@@ -9,6 +9,7 @@
 #import "CardGameViewController.h"
 #import "PlayingCardDeck.h"
 #import "CardMatchingGame.h"
+#import "GameResult.h"
 
 @interface CardGameViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *flipsLabel;
@@ -21,10 +22,35 @@
 @property (weak, nonatomic) IBOutlet UISegmentedControl *segmentedControl;
 @property (nonatomic) NSInteger selectedSegment;
 @property (weak, nonatomic) IBOutlet UISlider *slider;
+@property (strong, nonatomic) GameResult *gameResult;
 
 @end
 
 @implementation CardGameViewController
+
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+    
+    if (self)
+    {
+        // Get the tab bar item
+        UITabBarItem *tbi = [self tabBarItem];
+        
+        // Give it a label
+        [tbi setTitle:@"Game"];
+        
+        // Put the image on the tab bar item
+        [tbi setFinishedSelectedImage:[UIImage imageNamed:@"spade.png"]withFinishedUnselectedImage:[UIImage imageNamed:@"spade.png"]];
+    }
+}
+
+-(GameResult *)gameResult
+{
+    if(!_gameResult)
+        _gameResult = [[GameResult alloc] init];
+    return _gameResult;
+}
 
 - (CardMatchingGame *)game
 {
@@ -55,9 +81,6 @@
     
     for(UIButton *cardButton in self.cardButtons)
     {
-        // Set the background color of the window.
-        //[self.view setBackgroundColor:[UIColor greenColor]];
-        
         self.resultLabel.alpha = ([_slider value] == [_slider minimumValue]) ? 1.0 : 0.5;
         
         Card *card = [self.game cardAtIndex:[self.cardButtons indexOfObject:cardButton]];
@@ -95,7 +118,7 @@
         
         // Make the disabled buttons "semi-transparent."
         cardButton.alpha = card.isUnplayable ? 0.3 : 1.0;
-        
+
         if(self.game.result)
         {
             if(historyFlip)
@@ -116,6 +139,10 @@
     // Only setters and getters should access the instance variable directly.
     _flipCount = flipCount;
     self.flipsLabel.text = [NSString stringWithFormat:@"Flips: %d", self.flipCount];
+    
+    // Update the score.
+    self.gameResult.score = self.game.score;
+    
     NSLog(@"flips updated to %d", flipCount);
 }
 
@@ -140,6 +167,15 @@
 
 - (void)viewDidLoad
 {
+    // Change the color of the segmented control.
+    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIFont boldSystemFontOfSize:16], UITextAttributeFont, [UIColor whiteColor], UITextAttributeTextColor, nil];
+    [_segmentedControl setTitleTextAttributes:attributes forState:UIControlStateNormal];
+    NSDictionary *highlightedAttributes = [NSDictionary dictionaryWithObject:[UIColor whiteColor] forKey:UITextAttributeTextColor];
+    [_segmentedControl setTitleTextAttributes:highlightedAttributes forState:UIControlStateHighlighted];
+    
+    // Set the background color of the window.
+    //[self.view setBackgroundColor:[UIColor greenColor]];
+        
     // An array holds the history of the game.
     historyFlip = [[NSMutableArray alloc] init];
     
@@ -155,7 +191,7 @@
                 action:@selector(sliderValueChanged:)
       forControlEvents:UIControlEventValueChanged];
     
-    self.resultLabel.alpha = ([_slider value] == [_slider minimumValue]) ? 1.0 : 0.5;
+    //self.resultLabel.alpha = ([_slider value] == [_slider minimumValue]) ? 1.0 : 0.5;
     
     //[_slider setValue:[_slider minimumValue] animated:NO];
     
@@ -170,6 +206,7 @@
     if (_selectedSegment == 0)
     {
         _game = nil;
+        _game.result = nil;
         self.flipCount = 0;
         self.game.result = @"2-Card-Match Mode!";
         [self updateUI];
@@ -177,6 +214,7 @@
     else
     {
         _game = nil;
+        _game.result = nil;
         self.flipCount = 0;
         self.game.result = @"3-Card-Match Mode!";
         [self updateUI];
@@ -193,6 +231,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     else if (buttonIndex == 1)
     {
         _game = nil;
+        _game.result = nil;
         self.flipCount = 0;
         self.game.result = @"New Game!";
         [self updateUI];
